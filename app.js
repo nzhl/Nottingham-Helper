@@ -14,4 +14,14 @@ app.get('/problems', function (req, res) {
   })
 })
 
-app.listen(8888)
+const https = require('https')
+const fs = require('fs')
+
+var options = {
+    key: fs.readFileSync('./private.key'),
+    cert: fs.readFileSync('./public.csr')
+};
+
+https.createServer(options, app).listen(8888, function () {
+    console.log('Https server listening on port ' + 8888 );
+});
