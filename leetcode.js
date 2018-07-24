@@ -1,9 +1,9 @@
-var rp = require('request-promise-native');
-const cheerio = require('cheerio')
+const rp = require('request-promise-native');
 
-function doRequestProblems(url) {
+function doRequestProblems() {
+  URI = 'https://leetcode-cn.com/api/problems/all/'
   return rp({
-    url: url,
+    url: URI,
     json: true
   }).then(function (json) {
     let problems = []
@@ -27,8 +27,17 @@ function doRequestProblems(url) {
   })
 }
 
+function doRequestProblem(name) {
+  const URI = `https://leetcode-cn.com/problems/${name}/description/`
+  return rp(URI).then(string => {
+    let problem = string.match(/<meta name="description" content="((?:.|\n)*?)" \/>/)[1]
+    return problem
+  })
+}
+
 module.exports = {
-  requestProblems: function requestProblems() {
-    return doRequestProblems('https://leetcode-cn.com/api/problems/all/')
+  requestProblems: doRequestProblems,
+  requestProblem: function(name) {
+    return doRequestProblem(name)
   }
 }
