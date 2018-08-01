@@ -1,6 +1,7 @@
 const HTTPS = true
 
 
+const path = require('path')
 const leetcode = require('./leetcode')
 const express = require('express')
 const app = express()
@@ -28,6 +29,10 @@ app.get('/problem', function (req, res) {
     res.setHeader('Content-Type', 'application/json')
      res.send({error: "Problem name is required !" })
   }
+})
+
+app.get('/rank/:org', function (req, res) {
+  res.sendFile(path.resolve(__dirname, `data/${req.params.org}.json`))
 })
 
 
