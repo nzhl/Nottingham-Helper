@@ -45,8 +45,8 @@ if (HTTPS) {
       cert: fs.readFileSync('./public.csr')
   };
 
-  https.createServer(options, app).listen(8888, function () {
-      console.log('Https server listening on port ' + 8888 )
+  https.createServer(options, app).listen(443, function () {
+      console.log('Https server listening on port ' + 443 )
   });
 }
 else {
