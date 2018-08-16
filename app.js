@@ -6,6 +6,10 @@ const leetcode = require('./leetcode')
 const express = require('express')
 const app = express()
 
+app.get("/video", function (req, res) {
+  res.download("public/xx.mp4");
+})
+
 
 app.get('/problems', function (req, res) {
   leetcode.requestProblems()
