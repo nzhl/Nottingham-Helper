@@ -1,14 +1,15 @@
-const HTTPS = true
-
+const HTTPS = false
 
 const path = require('path')
+const fs = require('fs')
 const leetcode = require('./leetcode')
 const express = require('express')
+const formidable = require('formidable')
+const bodyParser = require('body-parser');
 const app = express()
 
-app.get("/video", function (req, res) {
-  res.download("public/xx.mp4");
-})
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
 
 app.get('/problems', function (req, res) {
@@ -35,9 +36,17 @@ app.get('/problem', function (req, res) {
   }
 })
 
-app.get('/rank/:org', function (req, res) {
-  res.sendFile(path.resolve(__dirname, `data/${req.params.org}.json`))
+app.post('/upload', function (req, res) {
+  console.log(req.body)
+  let form = new formidable.IncomingForm();
+  form.parse(req, function(error, fields, files) {
+    console.log(Object.keys(files))
+    console.log(fields)
+    // fs.writeFileSync("public/test.png", fs.readFileSync(files.upload.path));
+    res.send(200)
+  })
 })
+
 
 
 if (HTTPS) {
