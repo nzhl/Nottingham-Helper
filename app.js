@@ -1,4 +1,4 @@
-const HTTPS = false
+const HTTPS = true
 
 const path = require('path')
 const fs = require('fs')
@@ -37,15 +37,31 @@ app.get('/problem', function (req, res) {
 })
 
 app.post('/upload', function (req, res) {
-  console.log(req.body)
   let form = new formidable.IncomingForm();
   form.parse(req, function(error, fields, files) {
-    console.log(Object.keys(files))
-    console.log(fields)
-    // fs.writeFileSync("public/test.png", fs.readFileSync(files.upload.path));
+    const directory = fields.productId
+    const fileName = fields.fileName
+    if (!fsExistsSync(path.resolve(__dirname, 'public', directory))) {
+      fs.mkdirSync(path.resolve(__dirname, 'public', directory))
+      console.log('创建')
+    }
+    else console.log('no')
+    fs.writeFileSync(
+      path.resolve(__dirname, 'public', directory, fileName), 
+      fs.readFileSync(files.file.path)
+    );
     res.send(200)
   })
 })
+
+function fsExistsSync(path) {
+  try{
+    fs.accessSync(path,fs.F_OK);
+  }catch(e){
+    return false;
+  }
+  return true;
+}
 
 
 
