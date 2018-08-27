@@ -19,7 +19,10 @@ function fsExistsSync(path) {
   return true;
 }
 
-mongoose.connect('mongodb://localhost:27017/secondhand', { useNewUrlParser: true})
+mongoose.connect('mongodb://localhost:27017/secondhand', 
+  { useNewUrlParser: true}
+);
+
 const itemSchema = new mongoose.Schema({
   id: String,
   title: String,
@@ -28,7 +31,8 @@ const itemSchema = new mongoose.Schema({
   time: String,
   price: String,
   seller: String,
-  images: Array
+  images: Array,
+  category: String
 });
 
 const ItemModel = mongoose.model('item', itemSchema);
@@ -158,7 +162,12 @@ app.get('/item', function (res, req) {
 
 app.get('/items', function (res, req) {
   const seller = res.query.seller;
-  ItemModel.find({seller: seller}, (error, result) => {
+  let condition = {};
+  if (seller) {
+    condition = {seller: seller};
+  }
+
+  ItemModel.find(condition, (error, result) => {
     if (error) {
       console.error(error)
       req.sendStatus(400)
