@@ -21,7 +21,8 @@
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.3",
     "formidable": "^1.2.1",
-    "request": "^2.86.0",
+    "mongoose": "^5.2.9",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   }
 }
