@@ -19,7 +19,7 @@ function fsExistsSync(path) {
   return true;
 }
 
-mongoose.connect('mongodb://localhost:27017/secondhand', useNewUrlParser=true)
+mongoose.connect('mongodb://localhost:27017/secondhand', { useNewUrlParser: true})
 const itemSchema = new mongoose.Schema({
   id: String,
   title: String,
@@ -75,11 +75,11 @@ app.get('/openid', function (req, res) {
   })
 })
 
-app.post('/upload', function (req, res) {
+app.post('/image', function (req, res) {
   let form = new formidable.IncomingForm();
   form.parse(req, function(error, fields, files) {
-    const directory = fields.productId
-    const fileName = fields.fileName
+    const directory = fields.id
+    const fileName = fields.name
     if (!fsExistsSync(path.resolve(__dirname, 'public', directory))) {
       fs.mkdirSync(path.resolve(__dirname, 'public', directory))
     }
@@ -92,10 +92,81 @@ app.post('/upload', function (req, res) {
 })
 
 app.post('/item', function (res, req) {
-  let body = res.body;
-  console.log(res.body)
+  const body = res.body;
+  const item = new ItemModel(body);
+  item.save((error, result) => {
+    if (error) {
+      console.error(error)
+      req.sendStatus(400)
+    } else {
+      req.sendStatus(200)
+    }
+  })
 })
 
+app.delete('/item', function (res, req) {
+  const id = res.body.id;
+  ItemModel.findOne({id: id}, (error, result) => {
+    if (error) {
+      console.error(error)
+      req.sendStatus(400)
+    } else {
+      // delete related images
+      for(name of result.images){
+        const fullpath = path.resolve(__dirname, 'public', id, name)
+        console.log(fullpath)
+        fs.unlink( path.resolve(__dirname, 'public', id, name) )
+      }
+
+      ItemModel.deleteOne({id: id}, (error, result) => {
+        if (error) {
+          console.error(error)
+          req.sendStatus(400)
+        } else {
+          req.sendStatus(200)
+        }
+      })
+
+    }
+  })
+})
+
+app.put('/item', function (res, req) {
+  const body = res.body;
+  const id = res.body.id;
+  ItemModel.updateOne({id: id}, body, (error, result) => {
+    if (error) {
+      console.error(error)
+      req.sendStatus(400)
+    } else {
+      req.sendStatus(200)
+    }
+  })
+})
+
+app.get('/item', function (res, req) {
+  const id = res.query.id;
+  ItemModel.findOne({id: id}, (error, result) => {
+    if (error) {
+      console.error(error)
+      req.sendStatus(400)
+    } else {
+      req.json(result)
+    }
+  })
+})
+
+app.get('/items', function (res, req) {
+  const seller = res.query.seller;
+  ItemModel.find({seller: seller}, (error, result) => {
+    if (error) {
+      console.error(error)
+      req.sendStatus(400)
+    } else {
+      req.json(result)
+    }
+  })
+})
 
 
 

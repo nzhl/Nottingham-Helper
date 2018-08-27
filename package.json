@@ -22,7 +22,7 @@
     "express": "^4.16.3",
     "formidable": "^1.2.1",
     "mongoose": "^5.2.9",
-    "request": "^2.86.0",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   }
 }
