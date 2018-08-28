@@ -91,7 +91,7 @@ app.post('/image', function (req, res) {
       path.resolve(__dirname, 'public', directory, fileName), 
       fs.readFileSync(files.file.path)
     );
-    res.send(200)
+    res.sendStatus(200)
   })
 })
 
