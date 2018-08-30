@@ -1,4 +1,4 @@
-const HTTPS = false
+const HTTPS = true
 
 const path = require('path')
 const fs = require('fs')
@@ -32,7 +32,9 @@ const itemSchema = new mongoose.Schema({
   price: String,
   seller: String,
   images: Array,
-  category: String
+  category: String,
+  username: String,
+  avatar: String
 });
 
 const ItemModel = mongoose.model('item', itemSchema);
@@ -40,6 +42,8 @@ const ItemModel = mongoose.model('item', itemSchema);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use('/public', express.static(__dirname + '/public'));
+
 
 
 app.get('/problems', function (req, res) {
@@ -109,18 +113,19 @@ app.post('/item', function (res, req) {
 })
 
 app.delete('/item', function (res, req) {
-  const id = res.body.id;
+  const id = res.query.id;
   ItemModel.findOne({id: id}, (error, result) => {
     if (error) {
       console.error(error)
       req.sendStatus(400)
     } else {
+      const directory = path.resolve(__dirname, 'public', id)
       // delete related images
       for(name of result.images){
-        const fullpath = path.resolve(__dirname, 'public', id, name)
-        console.log(fullpath)
-        fs.unlink( path.resolve(__dirname, 'public', id, name) )
+        fs.unlinkSync(path.resolve(directory, name))
       }
+      fs.unlinkSync(path.resolve(directory, result.avatar))
+      fs.rmdirSync(directory)
 
       ItemModel.deleteOne({id: id}, (error, result) => {
         if (error) {
@@ -130,7 +135,6 @@ app.delete('/item', function (res, req) {
           req.sendStatus(200)
         }
       })
-
     }
   })
 })
@@ -174,7 +178,7 @@ app.get('/items', function (res, req) {
     } else {
       req.json(result)
     }
-  })
+  }).sort({'_id': -1})
 })
 
 
