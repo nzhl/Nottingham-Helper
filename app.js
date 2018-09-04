@@ -124,7 +124,13 @@ app.delete('/item', function (res, req) {
       for(name of result.images){
         fs.unlinkSync(path.resolve(directory, name))
       }
-      fs.unlinkSync(path.resolve(directory, result.avatar))
+      
+      // avatar image may not exist for unknown reason
+      try {
+        fs.unlinkSync(path.resolve(directory, result.avatar))
+      } catch (error) {
+        console.error(error)
+      }
       fs.rmdirSync(directory)
 
       ItemModel.deleteOne({id: id}, (error, result) => {
